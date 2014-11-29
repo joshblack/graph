@@ -31,14 +31,14 @@ Different data structures for the representation of graphs are used in practice:
 
 Performance of the two representations:
 
-|                 | Adjacency List | Adjacency Matrix           |
-|-----------------|----------------|----------------------------|
-Storage           | `O(|V| + |E|)` | `O(|V|<sup>2</sup>)`       |
-Add vertex        | `O(1)`         | `O(|V|<sup>2</sup>)`       |
-Add edge          | `O(1)`         | `O(1)`                     |
-Remove vertex     | `O(|E|)`       | `O(|V|<sup>2</sup>)`       |
-Remove edge       | `O(|E|)`       | `O(1)`                     |
-`(u,v)` adjacent? | `O(|V|)`       | `O(1)`                     |
+|                   | Adjacency List   | Adjacency Matrix         |
+|-------------------|------------------|--------------------------|
+| Storage           | O(\|V\| + \|E\|) | O(\|V\|<sup>2</sup>)     |
+| Add vertex        | O(1)             | O(\|V\|<sup>2</sup>)     |
+| Add edge          | O(1)             | O(1)                     |
+| Remove vertex     | O(\|E\|)         | O(\|V\|<sup>2</sup>)     |
+| Remove edge       | O(\|E\|)         | O(1)                     |
+| `(u,v)` adjacent? | O(\|V\|)         | O(1)                     |
 
 Adjacency lists are generally preferred because they efficiently represent sparse graphs. An adjacency matrix is preferred if the graph is dense or if one must be able to quickly look up if there is an edge connecting two vertices.
 
