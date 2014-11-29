@@ -11,5 +11,16 @@
   "dependencies": {
     "lodash": "^2.4.1",
     "mocha": "^2.0.1"
+  },
+  "devDependencies": {
+    "browserify": "^6.3.3",
+    "es6ify": "^1.5.1",
+    "gulp": "^3.8.10",
+    "gulp-util": "^3.0.1",
+    "mocha-traceur": "^2.0.0",
+    "node-notifier": "^4.0.2",
+    "traceur": "0.0.78",
+    "vinyl-source-stream": "^1.0.0",
+    "watchify": "^2.1.1"
   }
 }
