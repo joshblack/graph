@@ -8,6 +8,11 @@ Supported features:
     - [ ] Adjacency Matrix
 - [ ] Graph Operations
     - [ ] Constructor
+        - [ ] vertices
+        - [ ] isEdge
+        - [ ] directed
+        - [ ] undirected
+        - [ ] weighted
     - [ ] `adjacent`
     - [ ] `neighbors`
     - [ ] `add`
@@ -48,6 +53,32 @@ Adjacency lists are generally preferred because they efficiently represent spars
 
 > A dense graph is a graph G = (V, E) in which |E| = O(|V|<sup>2</sup>).
 
+## Algorithms
+
+Algorithms
+
+The core algorithm patterns are:
+
+- Breadth First Search
+- Depth First Search
+- Uniform Cost Search
+
+By themselves, the algorithm patterns do not compute any meaningful quantities over graphs; they are merely building blocks for constructing graph algorithms. The graph algorithms in the BGL currently include
+
+- Dijkstra's Shortest Paths
+- Bellman-Ford Shortest Paths
+- Johnson's All-Pairs Shortest Paths
+- Kruskal's Minimum Spanning Tree
+- Prim's Minimum Spanning Tree
+- Connected Components
+- Strongly Connected Components
+- Dynamic Connected Components (using Disjoint Sets)
+- Topological Sort
+- Transpose
+- Reverse Cuthill Mckee Ordering
+- Smallest Last Vertex Ordering
+- Sequential Vertex Coloring
+
 # Usage
 
 ## Graph Construction
@@ -59,12 +90,12 @@ let g = Graph(spec);
 
 // This specification object can have the following keys:
 let spec = {
-    // Can let the Graph deal with constructing your graph for you
+    // You can let the Graph deal with constructing your graph for you
     vertices: ['a', 'b', 'c', 'd'],
 
     // Just provide a function that determines whether there is an edge
     // between two vertices
-    findEdge: function () { /* ... */ },
+    isEdge: function () { /* ... */ },
 
     // Build a Directed Graph by passing in an array of arrays with 
     // length of 2 and a '-'
@@ -74,12 +105,7 @@ let spec = {
     undirected: [['a', 'b', 'c'], ['b', 'd']],
 
     // Pass in a number to the end of directed or undirected Graphs
-    weighted: [['a', 'b', 'd', 3], ['b', 'c', 1]],
-    weighted: [['a', '-b', 3], ['b', '-c', 1]],
-
-    // Specify the type of graph you want, otherwise it will determine the
-    // optimal type for your graph
-    type: 'list' || 'matrix'
+    weighted: [['a', '-b', 3], ['b', '-c', 1]]
 }
 ```
 

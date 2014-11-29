@@ -2,7 +2,39 @@
 "use strict";
 var AdjacencyMatrix = require('./AdjacencyMatrix');
 var AdjacencyList = require('./AdjacencyList');
-function Graph(spec) {}
+function Graph(spec) {
+  var vertices = getVertices(spec).vertices,
+      edges = getEdges(spec).edges,
+      graph = initialize(vertices, edges).graph;
+  return Object.freeze({
+    adjacent: g.adjacent,
+    neighbors: g.neighbors,
+    add: g.add,
+    set: g.set,
+    remove: g.remove
+  });
+}
+function getVertices(spec) {
+  var $__0 = spec,
+      vertices = $__0.vertices,
+      directed = $__0.directed,
+      undirected = $__0.undirected,
+      weighted = $__0.weighted;
+  if (directed) {
+    vertices = parseDirected(directed);
+  } else if (undirected) {
+    vertices = parseUndirected(undirected);
+  } else if (weighted) {
+    vertices = parseWeighted(weighted);
+  }
+  vertices = vertices || [];
+  return Object.freeze({vertices: vertices});
+}
+function getEdges() {}
+function parseDirected() {}
+function parseUndirected() {}
+function parseWeighted() {}
+function initialize(V, E) {}
 module.exports = Graph;
 
 //# sourceMappingURL=<compileOutput>
