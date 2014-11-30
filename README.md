@@ -98,8 +98,8 @@ let spec = {
     isEdge: function () { /* ... */ },
 
     // Build a Directed Graph by passing in an array of arrays with 
-    // length of 2 and a '-'
-    directed: [['a', '-b'], ['b', '-c'], ['c', '-a']],
+    // length of 2
+    directed: [['a', 'b'], ['b', 'c'], ['c', 'a']],
 
     // Build an Undirected Graph by passing in an array of arrays of any size
     undirected: [['a', 'b', 'c'], ['b', 'd']],

@@ -3,16 +3,8 @@
 var AdjacencyMatrix = require('./AdjacencyMatrix');
 var AdjacencyList = require('./AdjacencyList');
 function Graph(spec) {
-  var vertices = getVertices(spec).vertices,
-      edges = getEdges(spec).edges,
-      graph = initialize(vertices, edges).graph;
-  return Object.freeze({
-    adjacent: g.adjacent,
-    neighbors: g.neighbors,
-    add: g.add,
-    set: g.set,
-    remove: g.remove
-  });
+  var vertices = getVertices(spec).vertices;
+  console.log(vertices);
 }
 function getVertices(spec) {
   var $__0 = spec,
@@ -21,19 +13,28 @@ function getVertices(spec) {
       undirected = $__0.undirected,
       weighted = $__0.weighted;
   if (directed) {
-    vertices = parseDirected(directed);
+    vertices = parseInput(directed);
   } else if (undirected) {
-    vertices = parseUndirected(undirected);
+    vertices = parseInput(undirected);
   } else if (weighted) {
-    vertices = parseWeighted(weighted);
+    vertices = parseInput(weighted.map(function(e) {
+      return e.slice(0, -1);
+    }));
   }
   vertices = vertices || [];
   return Object.freeze({vertices: vertices});
 }
 function getEdges() {}
-function parseDirected() {}
-function parseUndirected() {}
-function parseWeighted() {}
+function parseInput(input) {
+  var vertices = [];
+  input.forEach(function(edge) {
+    edge.forEach(function(v) {
+      if (vertices.indexOf(v) === -1)
+        vertices.push(v);
+    });
+  });
+  return vertices;
+}
 function initialize(V, E) {}
 module.exports = Graph;
 
