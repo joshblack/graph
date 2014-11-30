@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "es6-collections": "^0.4.0",
     "lodash": "^2.4.1",
     "mocha": "^2.0.1"
   },

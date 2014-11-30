@@ -2,9 +2,19 @@
 "use strict";
 var AdjacencyMatrix = require('./AdjacencyMatrix');
 var AdjacencyList = require('./AdjacencyList');
+var _ = require('lodash');
+require('es6-collections');
 function Graph(spec) {
-  var vertices = getVertices(spec).vertices;
-  console.log(vertices);
+  var vertices = getVertices(spec).vertices,
+      edges = getEdges(spec).edges,
+      graph = initialize(vertices, edges).graph;
+  return Object.freeze({
+    adjacent: graph.adjacent,
+    neighbors: graph.neighbors,
+    add: graph.add,
+    set: graph.set,
+    remove: graph.remove
+  });
 }
 function getVertices(spec) {
   var $__0 = spec,
@@ -24,13 +34,41 @@ function getVertices(spec) {
   vertices = vertices || [];
   return Object.freeze({vertices: vertices});
 }
-function getEdges() {}
+function getEdges(spec) {
+  var edges = new Map(),
+      $__0 = spec,
+      directed = $__0.directed,
+      undirected = $__0.undirected,
+      weighted = $__0.weighted;
+  if (directed) {
+    directed.forEach(function(e) {
+      edges.set(e[0], e[1]);
+    });
+  } else if (undirected) {
+    undirected.forEach(function(edge) {
+      edge.forEach(function(v, i, arr) {
+        edges.set(v, _.without(arr, v));
+      });
+    });
+  } else if (weighted) {
+    weighted.forEach(function(edge) {
+      edge.forEach(function(v, i, arr) {
+        var weight = v.pop();
+        edges.set(v, {
+          edges: _.without(arr, v),
+          weight: weight
+        });
+      });
+    });
+  }
+  return Object.freeze({edges: edges});
+}
 function parseInput(input) {
-  var vertices = [];
+  var vertices = new Set();
   input.forEach(function(edge) {
     edge.forEach(function(v) {
-      if (vertices.indexOf(v) === -1)
-        vertices.push(v);
+      if (!vertices.has(v))
+        vertices.add(v);
     });
   });
   return vertices;
@@ -41,7 +79,7 @@ module.exports = Graph;
 //# sourceMappingURL=<compileOutput>
 
 
-},{"./AdjacencyList":"/Users/joshblack/Desktop/graph/lib/AdjacencyList.js","./AdjacencyMatrix":"/Users/joshblack/Desktop/graph/lib/AdjacencyMatrix.js"}],"/Users/joshblack/Desktop/graph/lib/AdjacencyList.js":[function(require,module,exports){
+},{"./AdjacencyList":"/Users/joshblack/Desktop/graph/lib/AdjacencyList.js","./AdjacencyMatrix":"/Users/joshblack/Desktop/graph/lib/AdjacencyMatrix.js","es6-collections":"/Users/joshblack/Desktop/graph/node_modules/es6-collections/index.js","lodash":"/Users/joshblack/Desktop/graph/node_modules/lodash/dist/lodash.js"}],"/Users/joshblack/Desktop/graph/lib/AdjacencyList.js":[function(require,module,exports){
 "use strict";
 function AdjacencyList(head) {
   this.head = head;
@@ -133,7 +171,209 @@ module.exports = AdjacencyMatrix;
 //# sourceMappingURL=<compileOutput>
 
 
-},{"lodash":"/Users/joshblack/Desktop/graph/node_modules/lodash/dist/lodash.js"}],"/Users/joshblack/Desktop/graph/node_modules/lodash/dist/lodash.js":[function(require,module,exports){
+},{"lodash":"/Users/joshblack/Desktop/graph/node_modules/lodash/dist/lodash.js"}],"/Users/joshblack/Desktop/graph/node_modules/es6-collections/index.js":[function(require,module,exports){
+(function (global){
+(function (exports) {'use strict';
+  //shared pointer
+  var i;
+  //shortcuts
+  var defineProperty = Object.defineProperty, is = Object.is;
+
+
+  //Polyfill global objects
+  if (typeof WeakMap == 'undefined') {
+    exports.WeakMap = createCollection({
+      // WeakMap#delete(key:void*):boolean
+      'delete': sharedDelete,
+      // WeakMap#clear():
+      clear: sharedClear,
+      // WeakMap#get(key:void*):void*
+      get: sharedGet,
+      // WeakMap#has(key:void*):boolean
+      has: mapHas,
+      // WeakMap#set(key:void*, value:void*):void
+      set: sharedSet
+    }, true);
+  }
+
+  if (typeof Map == 'undefined') {
+    exports.Map = createCollection({
+      // WeakMap#delete(key:void*):boolean
+      'delete': sharedDelete,
+      //:was Map#get(key:void*[, d3fault:void*]):void*
+      // Map#has(key:void*):boolean
+      has: mapHas,
+      // Map#get(key:void*):boolean
+      get: sharedGet,
+      // Map#set(key:void*, value:void*):void
+      set: sharedSet,
+      // Map#keys(void):Array === not in specs
+      keys: sharedKeys,
+      // Map#values(void):Array === not in specs
+      values: sharedValues,
+      // Map#forEach(callback:Function, context:void*):void ==> callback.call(context, key, value, mapObject) === not in specs`
+      forEach: sharedForEach,
+      // Map#clear():
+      clear: sharedClear
+    });
+  }
+
+  if (typeof Set == 'undefined') {
+    exports.Set = createCollection({
+      // Set#has(value:void*):boolean
+      has: setHas,
+      // Set#add(value:void*):boolean
+      add: sharedAdd,
+      // Set#delete(key:void*):boolean
+      'delete': sharedDelete,
+      // Set#clear():
+      clear: sharedClear,
+      // Set#values(void):Array === not in specs
+      values: sharedValues,
+      // Set#forEach(callback:Function, context:void*):void ==> callback.call(context, value, index) === not in specs
+      forEach: sharedSetIterate
+    });
+  }
+
+  if (typeof WeakSet == 'undefined') {
+    exports.WeakSet = createCollection({
+      // WeakSet#delete(key:void*):boolean
+      'delete': sharedDelete,
+      // WeakSet#add(value:void*):boolean
+      add: sharedAdd,
+      // WeakSet#clear():
+      clear: sharedClear,
+      // WeakSet#has(value:void*):boolean
+      has: setHas
+    }, true);
+  }
+
+
+  /**
+   * ES6 collection constructor
+   * @return {Function} a collection class
+   */
+  function createCollection(proto, objectOnly){
+    function Collection(a){
+      if (!this || this.constructor !== Collection) return new Collection(a);
+      this._keys = [];
+      this._values = [];
+      this.objectOnly = objectOnly;
+
+      //parse initial iterable argument passed
+      if (a) init.call(this, a);
+    }
+
+    //define size for non object-only collections
+    if (!objectOnly) {
+      defineProperty(proto, 'size', {
+        get: sharedSize
+      });
+    }
+
+    //set prototype
+    proto.constructor = Collection;
+    Collection.prototype = proto;
+
+    return Collection;
+  }
+
+
+  /** parse initial iterable argument passed */
+  function init(a){
+    var i;
+    //init Set argument, like `[1,2,3,{}]`
+    if (this.add)
+      a.forEach(this.add, this);
+    //init Map argument like `[[1,2], [{}, 4]]`
+    else
+      a.forEach(function(a){this.set(a[0],a[1])}, this);
+  }
+
+
+  /** delete */
+  function sharedDelete(key) {
+    if (this.has(key)) {
+      this._keys.splice(i, 1);
+      this._values.splice(i, 1);
+    }
+    // Aurora here does it while Canary doesn't
+    return -1 < i;
+  };
+
+  function sharedGet(key) {
+    return this.has(key) ? this._values[i] : undefined;
+  }
+
+  function has(list, key) {
+    if (this.objectOnly && key !== Object(key))
+      throw new TypeError("Invalid value used as weak collection key");
+    //NaN or 0 passed
+    if (key != key || key === 0) for (i = list.length; i-- && !is(list[i], key););
+    else i = list.indexOf(key);
+    return -1 < i;
+  }
+
+  function setHas(value) {
+    return has.call(this, this._values, value);
+  }
+
+  function mapHas(value) {
+    return has.call(this, this._keys, value);
+  }
+
+  /** @chainable */
+  function sharedSet(key, value) {
+    this.has(key) ?
+      this._values[i] = value
+      :
+      this._values[this._keys.push(key) - 1] = value
+    ;
+    return this;
+  }
+
+  /** @chainable */
+  function sharedAdd(value) {
+    if (!this.has(value)) this._values.push(value);
+    return this;
+  }
+
+  function sharedClear() {
+    this._values.length = 0;
+  }
+
+  /** keys, values, and iterate related methods */
+  function sharedValues() {
+    return this._values.slice();
+  }
+
+  function sharedKeys() {
+    return this._keys.slice();
+  }
+
+  function sharedSize() {
+    return this._values.length;
+  }
+
+  function sharedForEach(callback, context) {
+    var self = this;
+    var values = self._values.slice();
+    self._keys.slice().forEach(function(key, n){
+      callback.call(context, values[n], key, self);
+    });
+  }
+
+  function sharedSetIterate(callback, context) {
+    var self = this;
+    self._values.slice().forEach(function(value){
+      callback.call(context, value, value, self);
+    });
+  }
+
+})(typeof exports != 'undefined' && typeof global != 'undefined' ? global : window );
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],"/Users/joshblack/Desktop/graph/node_modules/lodash/dist/lodash.js":[function(require,module,exports){
 (function (global){
 /**
  * @license

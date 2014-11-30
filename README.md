@@ -10,9 +10,9 @@ Supported features:
     - [ ] Constructor
         - [ ] vertices
         - [ ] isEdge
-        - [ ] directed
-        - [ ] undirected
-        - [ ] weighted
+        - [x] directed
+        - [x] undirected
+        - [x] weighted
     - [ ] `adjacent`
     - [ ] `neighbors`
     - [ ] `add`
