@@ -7,7 +7,7 @@ var source = require('vinyl-source-stream');
 var notifier = require('node-notifier');
 
 gulp.task('watch', function () {
-    var bundler = watchify(browserify('./lib/Graph.js', watchify.args))
+    var bundler = watchify(browserify('./lib/AdjacencyList.js', watchify.args))
         .on('update', function () { util.log('Rebundling...'); })
         .on('time', function (time) {
             util.log('Rebundled in:', util.colors.cyan(time + 'ms'));
