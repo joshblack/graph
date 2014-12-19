@@ -150,9 +150,7 @@ g.set('a', 'b', value);
 
 # Tests
 
-To run the tests, use an ES6 compiler for mocha
-
-`mocha --compilers js:mocha-traceur test/*.js`
+To run the tests, use: `npm test`.
 
 # Guidelines this project uses to try out what Crockford does in **JavaScript: The Better Parts** talks
 
