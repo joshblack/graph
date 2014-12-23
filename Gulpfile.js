@@ -11,6 +11,7 @@ gulp.task('watch', function () {
     var bundler = browserify({ debug: true });
     bundler = watchify(bundler);
     bundler.add('./lib/AdjacencyList.js');
+    bundler.add('./lib/AdjacencyMatrix.js');
     bundler        
         .on('update', function () { util.log('Rebundling...'); })
         .on('time', function (time) {
